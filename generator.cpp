@@ -1,3 +1,6 @@
+// The autocodex wisdom generator. Compile with a C++17 capable compiler, like:
+// $ g++ -o generator -O3 -std=c++17 generator.cpp
+
 #include <algorithm>
 #include <array>
 #include <cstring>
