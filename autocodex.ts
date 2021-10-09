@@ -41,7 +41,7 @@ async function generate(query?: string): Promise<string> {
   const timerName = query ? "generateWithQuery" : "generate";
   console.time(timerName);
 
-  let generated: string = "";
+  let generated = "";
   if (p.stdout && p.stderr) {
     const decoder = new TextDecoder();
     const stdout = decoder.decode(await p.output());
@@ -55,7 +55,7 @@ async function generate(query?: string): Promise<string> {
     }
   }
 
-  const status = await p.status();
+  await p.status();
   p.close();
 
   console.timeEnd(timerName);
@@ -69,7 +69,7 @@ async function autoSpew() {
   if (wisdom) {
     client.privmsg(config.channel, wisdom);
   }
-  window.setTimeout(autoSpew, randTime());
+  setTimeout(autoSpew, randTime());
 }
 
 // Called when the bot sees action in a channel.
@@ -84,13 +84,13 @@ client.on("privmsg:channel", async (msg) => {
     const wisdom = await generate(text.substr(text.indexOf(":") + 1).trim());
     if (wisdom) {
       // Provide a thoughtful answer to the query.
-      client.privmsg(config.channel, `${origin.nick}: ${wisdom}`);
+      client.privmsg(channel, `${origin.nick}: ${wisdom}`);
     }
   }
 });
 
 // Nick regain check.
-window.setInterval(() => {
+setInterval(() => {
   if (client.state.nick != config.botName) {
     console.log(`Attempting to regain ${config.botName}`);
     client.nick(config.botName);
@@ -98,6 +98,6 @@ window.setInterval(() => {
 }, 60 * 1000);
 
 // Start the autoSpew loop.
-window.setTimeout(autoSpew, randTime());
+setTimeout(autoSpew, randTime());
 
 await client.connect("irc.quakenet.org", 6667);
