@@ -73,25 +73,25 @@ async function autoSpew() {
 }
 
 // Called when the bot sees action in a channel.
-client.on("privmsg:channel", async (msg) => {
-  const { origin, channel, text } = msg;
+client.on("privmsg:channel", async ({source, params}) => {
   // Check if someone is seeking our wisdom. Trigger on the configured nick, as
   // well as the current actual nick.
+  const text = params.text;
   if (
-    text.indexOf(`${client.state.nick}:`) == 0 ||
+    text.indexOf(`${client.state.user.nick}:`) == 0 ||
     text.indexOf(`${config.botName}:`) == 0
   ) {
     const wisdom = await generate(text.substr(text.indexOf(":") + 1).trim());
     if (wisdom) {
       // Provide a thoughtful answer to the query.
-      client.privmsg(channel, `${origin.nick}: ${wisdom}`);
+      client.privmsg(params.target, `${source?.name}: ${wisdom}`);
     }
   }
 });
 
 // Nick regain check.
 setInterval(() => {
-  if (client.state.nick != config.botName) {
+  if (client.state.user.nick != config.botName) {
     console.log(`Attempting to regain ${config.botName}`);
     client.nick(config.botName);
   }
